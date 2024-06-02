@@ -87,10 +87,9 @@ func Update(context *gin.Context) {
 		product.Quantity = *req.Quantity
 	}
 
-	// Save opening
 	if err := handler.Db.Save(&product).Error; err != nil {
-		handler.Logger.Errorf("error updating opening: %v", err.Error())
-		handler.SendError(context, http.StatusInternalServerError, "error updating opening")
+		handler.Logger.Errorf("error updating product: %v", err.Error())
+		handler.SendError(context, http.StatusInternalServerError, "error updating product")
 		return
 	}
 
@@ -165,19 +164,19 @@ func Delete(context *gin.Context) {
 		return
 	}
 
-	opening := schemas.Product{}
+	product := schemas.Product{}
 
 	db := handler.Db
 	id := context.Param("id")
-	if err := db.First(&opening, id).Error; err != nil {
+	if err := db.First(&product, id).Error; err != nil {
 		handler.SendError(context, http.StatusNotFound, fmt.Sprintf("Product with id: %s not found", id))
 		return
 	}
 
-	if err := db.Delete(&opening).Error; err != nil {
+	if err := db.Delete(&product).Error; err != nil {
 		handler.SendError(context, http.StatusInternalServerError, fmt.Sprintf("error deleting Product with id: %s", id))
 		return
 	}
 
-	handler.SendSuccess(context, opening)
+	handler.SendSuccess(context, product)
 }
