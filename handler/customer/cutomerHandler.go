@@ -72,7 +72,7 @@ func Update(context *gin.Context) {
 func List(context *gin.Context) {
 	var customers []schemas.Customer
 
-	if err := handler.Db.Find(&customers).Error; err != nil {
+	if err := handler.Db.Order("created_at DESC").Find(&customers).Error; err != nil {
 		handler.SendError(context, http.StatusInternalServerError, "error listing customers")
 		return
 	}
