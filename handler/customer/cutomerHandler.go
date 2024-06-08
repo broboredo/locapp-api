@@ -3,9 +3,11 @@ package customer
 import (
 	"fmt"
 	"github.com/broboredo/locapp-api/handler"
+	"github.com/broboredo/locapp-api/helpers"
 	"github.com/broboredo/locapp-api/schemas"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func Create(context *gin.Context) {
@@ -71,13 +73,32 @@ func Update(context *gin.Context) {
 
 func List(context *gin.Context) {
 	var customers []schemas.Customer
+	search := context.Query("search")
 
-	if err := handler.Db.Order("created_at DESC").Find(&customers).Error; err != nil {
+	page, _ := strconv.Atoi(context.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(context.DefaultQuery("pageSize", "10"))
+
+	query := handler.Db.Order("created_at DESC")
+	query = helpers.Search(query, search, "name", "email", "address", "phone")
+
+	var total int64
+	query.Model(&schemas.Customer{}).Count(&total)
+
+	paginatedQuery := helpers.Paginate(query, page, pageSize)
+	if err := paginatedQuery.Find(&customers).Error; err != nil {
 		handler.SendError(context, http.StatusInternalServerError, "error listing customers")
 		return
 	}
 
-	handler.SendSuccess(context, customers)
+	response := handler.PaginationResponse{
+		Data:       customers,
+		Total:      total,
+		Page:       page,
+		PageSize:   pageSize,
+		TotalPages: (int(total) + pageSize - 1) / pageSize,
+	}
+
+	handler.SendSuccess(context, response)
 }
 
 func Find(context *gin.Context) {

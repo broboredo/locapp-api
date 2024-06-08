@@ -9,6 +9,7 @@ type Customer struct {
 	gorm.Model
 	ID        uint   `gorm:"primary_key"`
 	Name      string `gorm:"not null"`
+	Email     string
 	Phone     string
 	Address   string
 	Notes     string

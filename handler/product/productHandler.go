@@ -3,9 +3,11 @@ package product
 import (
 	"fmt"
 	"github.com/broboredo/locapp-api/handler"
+	"github.com/broboredo/locapp-api/helpers"
 	"github.com/broboredo/locapp-api/schemas"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // @BasePath /api/v1
@@ -101,7 +103,7 @@ func Update(context *gin.Context) {
 // @Tags Product
 // @Accept json
 // @Produce json
-// @Success 200 {object} handler.ListProductResponse
+// @Success 200 {object} handler.PaginationResponse
 // @Failure 400 {object} handler.ErrorResponse
 // @Failure 404 {object} handler.ErrorResponse
 // @Failure 422 {object} handler.ErrorResponse
@@ -110,12 +112,31 @@ func Update(context *gin.Context) {
 func List(context *gin.Context) {
 	var products []schemas.Product
 
-	if err := handler.Db.Order("created_at DESC").Find(&products).Error; err != nil {
+	page, _ := strconv.Atoi(context.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(context.DefaultQuery("pageSize", "10"))
+
+	search := context.Query("search")
+	query := handler.Db.Order("created_at DESC")
+	query = helpers.Search(query, search, "name")
+
+	var total int64
+	query.Model(&schemas.Product{}).Count(&total)
+
+	paginatedQuery := helpers.Paginate(query, page, pageSize)
+	if err := paginatedQuery.Find(&products).Error; err != nil {
 		handler.SendError(context, http.StatusInternalServerError, "error listing products")
 		return
 	}
 
-	handler.SendSuccess(context, products)
+	response := handler.PaginationResponse{
+		Data:       products,
+		Total:      total,
+		Page:       page,
+		PageSize:   pageSize,
+		TotalPages: (int(total) + pageSize - 1) / pageSize,
+	}
+
+	handler.SendSuccess(context, response)
 }
 
 // @Summary Find Product
