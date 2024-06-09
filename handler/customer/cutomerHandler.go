@@ -63,8 +63,8 @@ func Update(context *gin.Context) {
 	}
 
 	if err := handler.Db.Save(&customer).Error; err != nil {
-		handler.Logger.Errorf("error updating opening: %v", err.Error())
-		handler.SendError(context, http.StatusInternalServerError, "error updating opening")
+		handler.Logger.Errorf("error updating customer: %v", err.Error())
+		handler.SendError(context, http.StatusInternalServerError, "error updating customer")
 		return
 	}
 
