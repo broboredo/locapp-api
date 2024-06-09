@@ -20,7 +20,7 @@ func initRoutes(router *gin.Engine) {
 		v1.GET("/customers", customer.List)
 		v1.POST("/customers", customer.Create)
 		v1.PUT("/customers/:id", customer.Update)
-		v1.GET("/customer/:id", customer.Find)
+		v1.GET("/customers/:id", customer.Find)
 		v1.DELETE("/customers/:id", customer.Delete)
 	}
 }
