@@ -201,3 +201,32 @@ func Delete(context *gin.Context) {
 
 	handler.SendSuccess(context, product)
 }
+
+func SyncImage(context *gin.Context) {
+	product := schemas.Product{}
+
+	id := context.Param("id")
+	if err := handler.Db.First(&product, id).Error; err != nil {
+		handler.SendError(context, http.StatusNotFound, fmt.Sprintf("Product with id: %s not found", id))
+		return
+	}
+
+	form, err := context.MultipartForm()
+	if err != nil {
+		handler.SendError(context, http.StatusBadRequest, fmt.Sprintf("Error on Multipart form, product id: %v", id))
+		return
+	}
+
+	if form.File["image"] != nil {
+		fileName := fmt.Sprintf("%v_%v", product.ID, product.UpdatedAt.Format)
+		product.ImagePath = helpers.SaveImage(form.File["image"][0], fileName, "products")
+	}
+
+	if err := handler.Db.Save(&product).Error; err != nil {
+		handler.Logger.Errorf("error updating product: %v", err.Error())
+		handler.SendError(context, http.StatusInternalServerError, "error updating product")
+		return
+	}
+
+	handler.SendSuccess(context, product)
+}

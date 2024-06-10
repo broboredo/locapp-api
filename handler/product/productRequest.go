@@ -17,8 +17,9 @@ type CreateProductRequest struct {
 type UpdateProductRequest struct {
 	Name        string   `json:"name" validate:"min=3,max=100"`
 	Description string   `json:"description"`
-	Price       *float32 `json:"price" validate:"numeric,gt=0"`
-	Quantity    *int     `json:"quantity" validate:"numeric,gt=0"`
+	Price       *float32 `json:"price" validate:"numeric"`
+	Quantity    *int     `json:"quantity" validate:"numeric"`
+	ImagePath   string   `json:"image"`
 }
 
 type IdIsRequired struct{}

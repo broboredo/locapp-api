@@ -11,6 +11,7 @@ type Product struct {
 	Description string
 	Price       float32 `sql:"type:decimal(10,2);"`
 	Quantity    int     `gorm:"default:1"`
+	ImagePath   string
 }
 
 type ProductResponse struct {

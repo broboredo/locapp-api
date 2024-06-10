@@ -16,6 +16,7 @@ func initRoutes(router *gin.Engine) {
 		v1.PUT("/products/:id", product.Update)
 		v1.GET("/products/:id", product.Find)
 		v1.DELETE("/products/:id", product.Delete)
+		v1.PUT("/products/:id/image", product.SyncImage)
 
 		v1.GET("/customers", customer.List)
 		v1.POST("/customers", customer.Create)
