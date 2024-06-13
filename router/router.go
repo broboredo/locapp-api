@@ -1,19 +1,29 @@
 package router
 
 import (
+	"github.com/broboredo/locapp-api/config"
 	docs "github.com/broboredo/locapp-api/docs"
+	"github.com/broboredo/locapp-api/middleware"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Init() {
+	config.LoadEnv()
 	configSwagger()
 
 	router := gin.Default()
 	initRoutes(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	protected := router.Group("/static/images/products")
+	protected.Use(middleware.SecurityToken())
+	{
+		protected.Static("/", "./static/images/products")
+	}
+
 	router.Run(":8080")
 }
 

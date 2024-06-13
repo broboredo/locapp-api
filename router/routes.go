@@ -4,12 +4,15 @@ import (
 	"github.com/broboredo/locapp-api/handler"
 	"github.com/broboredo/locapp-api/handler/customer"
 	"github.com/broboredo/locapp-api/handler/product"
+	"github.com/broboredo/locapp-api/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func initRoutes(router *gin.Engine) {
 	handler.InitHandler()
-	v1 := router.Group("api/v1")
+	v1 := router.Group("/api/v1")
+	v1.Use(middleware.SecurityToken())
+	router.Group("api/v1")
 	{
 		v1.GET("/products", product.List)
 		v1.POST("/products", product.Create)

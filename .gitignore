@@ -5,3 +5,5 @@
 *.test
 *.out
 .idea
+.env
+static/images/products/*
