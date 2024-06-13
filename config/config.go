@@ -31,3 +31,7 @@ func GetLogger(prefix string) *Logger {
 	logger := NewLogger(prefix)
 	return logger
 }
+
+func LoadEnv() {
+	loadEnv()
+}
