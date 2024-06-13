@@ -42,5 +42,5 @@ func SaveImage(file *multipart.FileHeader, fileName string, subDirectory string)
 		return ""
 	}
 
-	return filePath
+	return filepath.ToSlash(filePath)
 }
